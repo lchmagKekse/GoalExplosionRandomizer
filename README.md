@@ -8,4 +8,4 @@ To install manually copy [GoalExplosionRandomizer.dll](https://github.com/lchmag
 
 [Bakkesmod Page](https://bakkesplugins.com/plugins/view/314) (when its available)
 
-If you have suggestions for improvement or general feedback contact me on discord: **lchmagKekse#7359**
+If you have suggestions for improvement or general feedback contact me on discord: **lchmagKekse#0420**
