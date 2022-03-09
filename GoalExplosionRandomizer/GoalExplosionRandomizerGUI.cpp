@@ -31,11 +31,9 @@ void GoalExplosionRandomizer::RenderSettings() {
 	ImGui::Text("\nSelect Goal Explosions:");
 	if (ImGui::ListBoxHeader("Shift to clear all paints\nCtrl to select all paints"))
 	{
-		for (int n = 0; n < IM_ARRAYSIZE(items); n++)
+		for (int n = 0; n < items.size(); n++)
 		{
-			char buf[32];
-			sprintf(buf, items[n]);
-			if (ImGui::Selectable(buf, getSelected(n))) {
+			if (ImGui::Selectable(items[n].c_str(), getSelected(n))) {
 				lastSelected = n;
 				if (ImGui::GetIO().KeyCtrl)
 					setAllForN(lastSelected);

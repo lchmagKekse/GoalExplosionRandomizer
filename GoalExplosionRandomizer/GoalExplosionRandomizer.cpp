@@ -10,6 +10,7 @@
 BAKKESMOD_PLUGIN(GoalExplosionRandomizer, "GoalExplosionRandomizer", plugin_version, PLUGINTYPE_FREEPLAY)
 
 std::shared_ptr<CVarManagerWrapper> _globalCvarManager;
+std::shared_ptr<GameWrapper> gw;
 
 uint16_t goal;
 uint8_t paint;
@@ -53,6 +54,8 @@ void GoalExplosionRandomizer::onLoad() {
 				}
 			}
 		});
+	fillVector();
+	sortVector();
 	loadData();
 }
 
@@ -78,7 +81,7 @@ void GoalExplosionRandomizer::clearAllForN(int var) {
 
 void GoalExplosionRandomizer::selectAll() {
 
-	for (int i = 0; i < IM_ARRAYSIZE(items); i++) {
+	for (int i = 0; i < items.size(); i++) {
 		for (int x = 0; x < IM_ARRAYSIZE(paints); x++) {
 			if (colorselection[i][x] != 2)
 				colorselection[i][x] = 1;
@@ -89,7 +92,7 @@ void GoalExplosionRandomizer::selectAll() {
 
 bool GoalExplosionRandomizer::checkempty() {
 
-	for (int i = 0; i < IM_ARRAYSIZE(items); i++) {
+	for (int i = 0; i < items.size(); i++) {
 		for (int x = 0; x < IM_ARRAYSIZE(paints); x++) {
 
 			if (colorselection[i][x] == 1)
@@ -106,7 +109,7 @@ void GoalExplosionRandomizer::setRandomGoalExplosionFromSelected() {
 	int var, svar;
 
 	for (bool hasIDs = false; !hasIDs;) {
-		var = rndm(0, IM_ARRAYSIZE(items));
+		var = rndm(0, items.size());
 		svar = rndm(0, IM_ARRAYSIZE(paints));
 
 		if (colorselection[var][svar] == 1) {
@@ -146,7 +149,7 @@ void GoalExplosionRandomizer::saveData() {
 	std::fstream file;
 	file.open(getBMpath(), std::ios::out);
 	if (file.is_open())
-		for (int i = 0; i < IM_ARRAYSIZE(items); i++) {
+		for (int i = 0; i < items.size(); i++) {
 			for (int x = 0; x < IM_ARRAYSIZE(paints); x++) {
 				file << colorselection[i][x];
 				file << "\n";
@@ -179,7 +182,7 @@ void GoalExplosionRandomizer::loadData() {
 
 void GoalExplosionRandomizer::clearAll() {
 
-	for (int i = 0; i < IM_ARRAYSIZE(items); i++) {
+	for (int i = 0; i < items.size(); i++) {
 		for (int x = 0; x < IM_ARRAYSIZE(paints); x++) {
 			if(colorselection[i][x] != 2)
 				colorselection[i][x] = 0;
@@ -193,4 +196,49 @@ const char* GoalExplosionRandomizer::getBMpath() {
 	auto BMpath = gameWrapper->GetDataFolder() / "GoalExplosionRandomizer.txt";
 	std::string BMpath_str = BMpath.string();
 	return BMpath_str.c_str();
+}
+
+void GoalExplosionRandomizer::fillVector() {
+
+	auto iw = gw->GetItemsWrapper();
+	if (iw.IsNull()) { return; }
+	auto arr = iw.GetAllProducts();
+	if (arr.IsNull()) { return; }
+
+	items.clear();
+	GoalIDs.clear();
+
+	for (int i = 1; i <= arr.Count(); i++) {
+
+		ProductWrapper product = iw.GetProduct(i);
+		if (!product.IsNull()) {
+
+			if (product.GetSlot().GetOnlineLabel().ToString() == "Goal Explosion") {
+
+				std::string svar = product.GetLabel().ToString();
+				items.push_back(svar);
+				GoalIDs.push_back(i);
+			}
+		}
+	}
+}
+
+void GoalExplosionRandomizer::sortVector() {
+
+	for (int var = 0; var < items.size(); var++) {
+		for (int svar = 0; svar < (items.size() - 1 - var); svar++) {
+
+			if (strcmp(items[svar].c_str(), items[svar + 1].c_str()) > 0) {
+
+				std::string temp = items[svar];
+				items.erase(items.begin() + svar);
+				items.insert(items.begin() + svar + 1, temp);
+
+				uint16_t temp2 = GoalIDs[svar];
+				GoalIDs.erase(GoalIDs.begin() + svar);
+				GoalIDs.insert(GoalIDs.begin() + svar + 1, temp2);
+
+			}
+		}
+	}
 }
