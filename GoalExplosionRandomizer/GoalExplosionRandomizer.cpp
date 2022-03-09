@@ -54,8 +54,10 @@ void GoalExplosionRandomizer::onLoad() {
 				}
 			}
 		});
+
 	fillVector();
 	sortVector();
+	writeUnpaintables();
 	loadData();
 }
 
@@ -241,4 +243,36 @@ void GoalExplosionRandomizer::sortVector() {
 			}
 		}
 	}
+}
+
+void GoalExplosionRandomizer::writeUnpaintables() {
+
+	for (int var = 0; var < items.size(); var++) {
+
+		if (isPaintable(var))
+			for (int svar = 0; svar < IM_ARRAYSIZE(paints); svar++) {			
+				selection.push_back(0);
+			}
+		else {
+			selection.push_back(0);
+			for (int svar = 0; svar < (IM_ARRAYSIZE(paints) - 1); svar++) {
+				selection.push_back(2);
+			}
+		}
+	}
+}
+
+bool GoalExplosionRandomizer::isPaintable(int var) {
+
+	auto iw = gw->GetItemsWrapper();
+	if (iw.IsNull()) { return false; }
+	auto arr = iw.GetAllProducts();
+	if (arr.IsNull()) { return false; }
+
+	ProductWrapper product = iw.GetProduct(GoalIDs[var]);
+	if (!product.IsNull())
+		if (product.IsPaintable())
+			return true;
+
+	return false;
 }
