@@ -17,6 +17,7 @@ std::string itemmod_code;
 
 
 void GoalExplosionRandomizer::onLoad() {
+
 	_globalCvarManager = cvarManager;
 
 	cvarManager->registerNotifier("ClearAll", [this](std::vector<std::string> args) {
@@ -188,8 +189,8 @@ void GoalExplosionRandomizer::clearAll() {
 }
 
 const char* GoalExplosionRandomizer::getBMpath() {
-	std::string path;
-	path = getenv("appdata");
-	path += "/bakkesmod/bakkesmod/data/GoalExplosionRandomizer.txt";
-	return path.c_str();
+
+	auto BMpath = gameWrapper->GetDataFolder() / "GoalExplosionRandomizer.txt";
+	std::string BMpath_str = BMpath.string();
+	return BMpath_str.c_str();
 }
