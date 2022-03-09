@@ -106,8 +106,8 @@ void GoalExplosionRandomizer::setRandomGoalExplosionFromSelected() {
 	int var, svar;
 
 	for (bool hasIDs = false; !hasIDs;) {
-		var = rndm(0, 93);
-		svar = rndm(0, 14);
+		var = rndm(0, IM_ARRAYSIZE(items));
+		svar = rndm(0, IM_ARRAYSIZE(paints));
 
 		if (colorselection[var][svar] == 1) {
 			goal = GoalIDs[var];
