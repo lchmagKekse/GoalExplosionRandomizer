@@ -16,7 +16,6 @@ uint16_t goal;
 uint8_t paint;
 std::string itemmod_code;
 
-
 void GoalExplosionRandomizer::onLoad() {
 
 	_globalCvarManager = cvarManager;
@@ -66,8 +65,8 @@ void GoalExplosionRandomizer::onUnload() {}
 void GoalExplosionRandomizer::setAllForN(int var) {
 
 	for (int x = 0; x < IM_ARRAYSIZE(paints); x++) {
-		if (colorselection[var][x] != 2)
-			colorselection[var][x] = 1;
+		if (selection[(var * IM_ARRAYSIZE(paints)) + x] != 2)
+			selection[(var * IM_ARRAYSIZE(paints)) + x] = 1;
 	}
 	saveData();
 }
@@ -75,48 +74,53 @@ void GoalExplosionRandomizer::setAllForN(int var) {
 void GoalExplosionRandomizer::clearAllForN(int var) {
 
 	for (int x = 0; x < IM_ARRAYSIZE(paints); x++) {
-		if (colorselection[var][x] != 2)
-			colorselection[var][x] = 0;
+		if (selection[(var * IM_ARRAYSIZE(paints)) + x] != 2)
+			selection[(var * IM_ARRAYSIZE(paints)) + x] = 0;
 	}
 	saveData();
 }
 
 void GoalExplosionRandomizer::selectAll() {
 
-	for (int i = 0; i < items.size(); i++) {
-		for (int x = 0; x < IM_ARRAYSIZE(paints); x++) {
-			if (colorselection[i][x] != 2)
-				colorselection[i][x] = 1;
-		}
+	for (int var = 0; var < selection.size(); var++) {
+		if (selection[var] != 2)
+			selection[var] = 1;
+	}
+	saveData();
+}
+
+void GoalExplosionRandomizer::clearAll() {
+
+	for (int var = 0; var < selection.size(); var++) {
+		if (selection[var] != 2)
+			selection[var] = 0;
 	}
 	saveData();
 }
 
 bool GoalExplosionRandomizer::checkempty() {
 
-	for (int i = 0; i < items.size(); i++) {
-		for (int x = 0; x < IM_ARRAYSIZE(paints); x++) {
+	for (int var = 0; var < selection.size(); var++) {
 
-			if (colorselection[i][x] == 1)
+			if (selection[var] == 1)
 			{
 				return true;
 			}
-		}
 	}
 	return false;
 }
 
 void GoalExplosionRandomizer::setRandomGoalExplosionFromSelected() {
 
-	int var, svar;
+	int var;
 
 	for (bool hasIDs = false; !hasIDs;) {
-		var = rndm(0, items.size());
-		svar = rndm(0, IM_ARRAYSIZE(paints));
 
-		if (colorselection[var][svar] == 1) {
-			goal = GoalIDs[var];
-			paint = svar;
+		var = rndm(0, selection.size());
+
+		if (selection[var] == 1) {
+			goal = GoalIDs[(int)(var/14)];
+			paint = var % 14;
 			hasIDs = true;
 		}
 	}
@@ -151,46 +155,33 @@ void GoalExplosionRandomizer::saveData() {
 	std::fstream file;
 	file.open(getBMpath(), std::ios::out);
 	if (file.is_open())
-		for (int i = 0; i < items.size(); i++) {
-			for (int x = 0; x < IM_ARRAYSIZE(paints); x++) {
-				file << colorselection[i][x];
+		for (int var = 0; var < selection.size(); var++) {
+				file << (int)selection[var];
 				file << "\n";
-			}
 		}
 	file.close();
 }
 
 void GoalExplosionRandomizer::loadData() {
-	int var = 0, svar = 0;
+	int var = 0;
+
 	std::fstream file;
 	file.open(getBMpath(), std::ios::in);
+
 	if (file.is_open()) {
+
 		std::string line;
 		while (std::getline(file, line)) {
-			if (svar >= IM_ARRAYSIZE(paints)) {
-				svar = 0;
-				var++;
-			}
 
-			if (line._Equal("0") && colorselection[var][svar] != 2)
-				colorselection[var][svar] = 0;
-			else if (line._Equal("1") && colorselection[var][svar] != 2)
-				colorselection[var][svar] = 1;
-			svar++;
+			if (line._Equal("0") && selection[var] != 2)
+				selection[var] = 0;
+			else if (line._Equal("1") && selection[var] != 2)
+				selection[var] = 1;
+
+			var++;
 		}
 	}
 	file.close();
-}
-
-void GoalExplosionRandomizer::clearAll() {
-
-	for (int i = 0; i < items.size(); i++) {
-		for (int x = 0; x < IM_ARRAYSIZE(paints); x++) {
-			if(colorselection[i][x] != 2)
-				colorselection[i][x] = 0;
-		}
-	}
-	saveData();
 }
 
 const char* GoalExplosionRandomizer::getBMpath() {
@@ -210,16 +201,16 @@ void GoalExplosionRandomizer::fillVector() {
 	items.clear();
 	GoalIDs.clear();
 
-	for (int i = 1; i <= arr.Count(); i++) {
+	for (int var = 1; var <= arr.Count(); var++) {
 
-		ProductWrapper product = iw.GetProduct(i);
+		ProductWrapper product = iw.GetProduct(var);
 		if (!product.IsNull()) {
 
 			if (product.GetSlot().GetOnlineLabel().ToString() == "Goal Explosion") {
 
 				std::string svar = product.GetLabel().ToString();
 				items.push_back(svar);
-				GoalIDs.push_back(i);
+				GoalIDs.push_back(var);
 			}
 		}
 	}

@@ -20,7 +20,6 @@ void GoalExplosionRandomizer::RenderSettings() {
 
 	bool enabled = enableCvar.getBoolValue();
 
-
 	if (ImGui::Checkbox("Enable plugin", &enabled)) {
 		enableCvar.setValue(enabled);
 	}
@@ -31,10 +30,10 @@ void GoalExplosionRandomizer::RenderSettings() {
 	ImGui::Text("\nSelect Goal Explosions:");
 	if (ImGui::ListBoxHeader("Shift to clear all paints\nCtrl to select all paints"))
 	{
-		for (int n = 0; n < items.size(); n++)
+		for (int var = 0; var < items.size(); var++)
 		{
-			if (ImGui::Selectable(items[n].c_str(), getSelected(n))) {
-				lastSelected = n;
+			if (ImGui::Selectable(items[var].c_str(), getSelected(var))) {
+				lastSelected = var;
 				if (ImGui::GetIO().KeyCtrl)
 					setAllForN(lastSelected);
 				if (ImGui::GetIO().KeyShift)
@@ -48,18 +47,15 @@ void GoalExplosionRandomizer::RenderSettings() {
 	std::string b = items[lastSelected];
 	std::string c = a + b;
 
-
 	ImGui::Text(c.c_str());
 	if (ImGui::ListBoxHeader(" "))
 	{
-		for (int n = 0; colorselection[lastSelected][n] != 2 && n < IM_ARRAYSIZE(paints); n++)
+		for (int var = 0; selection[(lastSelected * IM_ARRAYSIZE(paints)) + var] != 2 && var < IM_ARRAYSIZE(paints); var++)
 		{
-			char buf[32];
-			sprintf(buf, paints[n]);
-			if (ImGui::Selectable(buf, colorselection[lastSelected][n]))
+			if (ImGui::Selectable(paints[var], selection[(lastSelected * IM_ARRAYSIZE(paints)) + var]))
 			{
-				if (colorselection[lastSelected][n] != 2)
-					colorselection[lastSelected][n] ^= 1;
+				if (selection[(lastSelected * IM_ARRAYSIZE(paints)) + var] != 2)
+					selection[(lastSelected * IM_ARRAYSIZE(paints)) + var] ^= 1;
 				saveData();
 			}
 		}
@@ -83,8 +79,8 @@ bool GoalExplosionRandomizer::getSelected(int var) {
 
 	bool isenabled = false;
 
-	for (int x = 0; x < IM_ARRAYSIZE(paints) && !isenabled; x++) {
-		if (colorselection[var][x] == 1)
+	for (int svar = 0; svar < IM_ARRAYSIZE(paints) && !isenabled; svar++) {
+		if (selection[(var * IM_ARRAYSIZE(paints)) + svar] == 1)
 			isenabled = true;
 	}
 	return isenabled;
