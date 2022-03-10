@@ -34,8 +34,8 @@ void GoalExplosionRandomizer::onLoad() {
 
 	cvarManager->registerCvar("GoalExplosionRandomizer_enable", "0", "Enable Plugin", true, true, 0, true, 1)
 		.addOnValueChanged([this](std::string oldValue, CVarWrapper cvar) {
-		Plugin_enabled = cvar.getBoolValue();
-			});
+			Plugin_enabled = cvar.getBoolValue();
+		});
 
 	gameWrapper->HookEventPost("Function TAGame.PRI_TA.ClientScoredGoal",
 		[this](std::string eventName) {
@@ -160,13 +160,9 @@ void GoalExplosionRandomizer::selectOwned() {
 
 bool GoalExplosionRandomizer::checkempty() {
 
-	for (int var = 0; var < selection.size(); var++) {
-
+	for (int var = 0; var < selection.size(); var++) 
 			if (selection[var] == 1)
-			{
 				return true;
-			}
-	}
 	return false;
 }
 
@@ -213,7 +209,7 @@ void GoalExplosionRandomizer::setGoalExplosion(uint16_t goalID, uint8_t paintID)
 void GoalExplosionRandomizer::saveData() {
 
 	std::fstream file;
-	file.open(getBMpath(), std::ios::out);
+	file.open(getSelectionSavePath(), std::ios::out);
 	if (file.is_open())
 		for (int var = 0; var < selection.size(); var++) {
 				file << (int)selection[var];
@@ -226,7 +222,7 @@ void GoalExplosionRandomizer::loadData() {
 	int var = 0;
 
 	std::fstream file;
-	file.open(getBMpath(), std::ios::in);
+	file.open(getSelectionSavePath(), std::ios::in);
 
 	if (file.is_open()) {
 
@@ -244,16 +240,9 @@ void GoalExplosionRandomizer::loadData() {
 	file.close();
 }
 
-const char* GoalExplosionRandomizer::getBMpath() {
+const char* GoalExplosionRandomizer::getSelectionSavePath() {
 
-	auto BMpath = gameWrapper->GetDataFolder() / "GoalExplosionRandomizer.txt";
-	std::string BMpath_str = BMpath.string();
-	return BMpath_str.c_str();
-}
-
-const char* GoalExplosionRandomizer::getTestpath() {
-
-	auto BMpath = gameWrapper->GetDataFolder() / "test.txt";
+	auto BMpath = gameWrapper->GetDataFolder() / "GoalExplosionRandomizer" / "GoalExplosionRandomizer.txt";
 	std::string BMpath_str = BMpath.string();
 	return BMpath_str.c_str();
 }

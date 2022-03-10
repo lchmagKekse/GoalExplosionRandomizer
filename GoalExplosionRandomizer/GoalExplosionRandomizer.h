@@ -22,8 +22,7 @@ class GoalExplosionRandomizer: public BakkesMod::Plugin::BakkesModPlugin, public
 	void clearAll();
 	void selectAll();
 	void selectOwned();
-	const char* getBMpath();
-	const char* getTestpath();
+	const char* getSelectionSavePath();
 	void selectForXY(std::string var, int svar);
 	void fillVector();
 	void sortVector();

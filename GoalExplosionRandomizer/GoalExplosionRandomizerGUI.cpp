@@ -76,6 +76,9 @@ void GoalExplosionRandomizer::RenderSettings() {
 	if (ImGui::Button("Select owned")) {
 		gameWrapper->Execute([this](GameWrapper* gw) { cvarManager->executeCommand("SelectOwned"); });
 	}
+	if (ImGui::IsItemHovered()) {
+		ImGui::SetTooltip("Select all owned Goal Explosions");
+	}
 
 	ImGui::Text("Made by LchmagKekse");
 }
