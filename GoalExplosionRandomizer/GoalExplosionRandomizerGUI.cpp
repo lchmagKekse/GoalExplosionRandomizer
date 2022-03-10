@@ -38,7 +38,7 @@ void GoalExplosionRandomizer::RenderSettings() {
 					setAllForN(lastSelected);
 				if (ImGui::GetIO().KeyShift)
 					clearAllForN(lastSelected);
-			}				
+			}
 		}
 		ImGui::ListBoxFooter();
 	}
@@ -70,6 +70,11 @@ void GoalExplosionRandomizer::RenderSettings() {
 	ImGui::SameLine();
 	if (ImGui::Button("Select all")) {
 		gameWrapper->Execute([this](GameWrapper* gw) { cvarManager->executeCommand("SelectAll"); });
+	}
+
+	ImGui::SameLine();
+	if (ImGui::Button("Select owned")) {
+		gameWrapper->Execute([this](GameWrapper* gw) { cvarManager->executeCommand("SelectOwned"); });
 	}
 
 	ImGui::Text("Made by LchmagKekse");

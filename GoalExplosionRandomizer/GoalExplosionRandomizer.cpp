@@ -28,6 +28,10 @@ void GoalExplosionRandomizer::onLoad() {
 		selectAll();
 		}, "", PERMISSION_ALL);
 
+	cvarManager->registerNotifier("SelectOwned", [this](std::vector<std::string> args) {
+		selectOwned();
+		}, "", PERMISSION_ALL);
+
 	cvarManager->registerCvar("GoalExplosionRandomizer_enable", "0", "Enable Plugin", true, true, 0, true, 1)
 		.addOnValueChanged([this](std::string oldValue, CVarWrapper cvar) {
 		Plugin_enabled = cvar.getBoolValue();
@@ -94,6 +98,62 @@ void GoalExplosionRandomizer::clearAll() {
 	for (int var = 0; var < selection.size(); var++) {
 		if (selection[var] != 2)
 			selection[var] = 0;
+	}
+	saveData();
+}
+
+void GoalExplosionRandomizer::selectForXY(std::string var, int svar) {
+
+	for (int i = 0; i < items.size() ; i++) {
+
+		if (items[i] == var)
+			selection[(i * IM_ARRAYSIZE(paints)) + svar] = 1;
+	}
+
+}
+
+void GoalExplosionRandomizer::selectOwned() {
+
+	auto iw = gw->GetItemsWrapper();
+	if (iw.IsNull()) { return; }
+	auto arr = iw.GetOwnedProducts();
+	if (arr.IsNull()) { return; }
+
+	bool isPainted = false;
+
+	for (int var = 1; var < arr.Count(); var++) {
+
+		auto product = arr.Get(var);
+		if (!product.IsNull()) {
+
+			auto productSlot = product.GetProduct();
+
+			if (!productSlot.IsNull()) {
+
+				if (productSlot.GetSlot().GetOnlineLabel().ToString() == "Goal Explosion") {
+
+					auto attributes = product.GetAttributes();
+
+					if (!attributes.IsNull()) {
+
+						for (int i = 0; i < attributes.Count(); i++) {
+
+							auto attr = attributes.Get(i);
+
+							if (attr.GetAttributeType() == "ProductAttribute_Painted_TA") {
+								selectForXY(product.GetLongLabel().ToString(), ProductAttribute_PaintedWrapper(attr.memory_address).GetPaintID());
+								isPainted = true;
+							} 
+						}
+					}
+
+					if (isPainted == false)
+						selectForXY(product.GetLongLabel().ToString(), 0);
+
+					isPainted = false;
+				}
+			}
+		}
 	}
 	saveData();
 }
@@ -187,6 +247,13 @@ void GoalExplosionRandomizer::loadData() {
 const char* GoalExplosionRandomizer::getBMpath() {
 
 	auto BMpath = gameWrapper->GetDataFolder() / "GoalExplosionRandomizer.txt";
+	std::string BMpath_str = BMpath.string();
+	return BMpath_str.c_str();
+}
+
+const char* GoalExplosionRandomizer::getTestpath() {
+
+	auto BMpath = gameWrapper->GetDataFolder() / "test.txt";
 	std::string BMpath_str = BMpath.string();
 	return BMpath_str.c_str();
 }
