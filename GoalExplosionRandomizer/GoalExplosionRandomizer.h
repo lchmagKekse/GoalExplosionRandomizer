@@ -25,7 +25,9 @@ class GoalExplosionRandomizer: public BakkesMod::Plugin::BakkesModPlugin, public
 	const char* getSelectionSavePath();
 	void selectForXY(std::string var, int svar);
 	void fillVector();
-	void sortVector();
+	void quicksortVector(int start, int end);
+	int partition(int start, int end);
+	void Swap(int var, int svar);
 	void writeUnpaintables();
 	bool isPaintable(int);
 	

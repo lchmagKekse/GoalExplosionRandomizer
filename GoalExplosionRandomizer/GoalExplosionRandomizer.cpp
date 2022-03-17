@@ -59,7 +59,7 @@ void GoalExplosionRandomizer::onLoad() {
 		});
 
 	fillVector();
-	sortVector();
+	quicksortVector(0, items.size() - 1);
 	writeUnpaintables();
 	loadData();
 }
@@ -219,6 +219,7 @@ void GoalExplosionRandomizer::saveData() {
 }
 
 void GoalExplosionRandomizer::loadData() {
+
 	int var = 0;
 
 	std::fstream file;
@@ -272,24 +273,60 @@ void GoalExplosionRandomizer::fillVector() {
 	}
 }
 
-void GoalExplosionRandomizer::sortVector() {
+void GoalExplosionRandomizer::quicksortVector(int start, int end) {
 
-	for (int var = 0; var < items.size(); var++) {
-		for (int svar = 0; svar < (items.size() - 1 - var); svar++) {
+	if (start >= end)
+		return;
 
-			if (strcmp(items[svar].c_str(), items[svar + 1].c_str()) > 0) {
+	int p = partition(start, end);
+	quicksortVector(start, p - 1);
+	quicksortVector(p + 1, end);
 
-				std::string temp = items[svar];
-				items.erase(items.begin() + svar);
-				items.insert(items.begin() + svar + 1, temp);
+}
 
-				uint16_t temp2 = GoalIDs[svar];
-				GoalIDs.erase(GoalIDs.begin() + svar);
-				GoalIDs.insert(GoalIDs.begin() + svar + 1, temp2);
+int GoalExplosionRandomizer::partition(int start, int end) {
 
-			}
+	std::string pivot = items[start];
+
+	int count = 0;
+	for (int var = start + 1; var <= end; var++) {
+		if (items[var] <= pivot)
+			count++;
+	}
+
+	int pivotIndex = start + count;
+	Swap(pivotIndex, start);
+
+	int var = start, svar = end;
+
+	while (var < pivotIndex && svar > pivotIndex) {
+
+		while (items[var] <= pivot) {
+			var++;
+		}
+
+		while (items[svar] > pivot) {
+			svar--;
+		}
+
+		if (var < pivotIndex && svar > pivotIndex) {
+			Swap(var++, svar--);
 		}
 	}
+
+	return pivotIndex;
+}
+
+void GoalExplosionRandomizer::Swap(int var, int svar) {
+
+	std::string temp = items[svar];
+	items[svar] = items[var];
+	items[var] = temp;
+
+	uint16_t temp2 = GoalIDs[svar];
+	GoalIDs[svar] = GoalIDs[var];
+	GoalIDs[var] = temp2;
+
 }
 
 void GoalExplosionRandomizer::writeUnpaintables() {

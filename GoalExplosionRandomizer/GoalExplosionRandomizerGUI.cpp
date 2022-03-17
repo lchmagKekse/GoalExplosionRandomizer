@@ -23,9 +23,6 @@ void GoalExplosionRandomizer::RenderSettings() {
 	if (ImGui::Checkbox("Enable plugin", &enabled)) {
 		enableCvar.setValue(enabled);
 	}
-	if (ImGui::IsItemHovered()) {
-		ImGui::SetTooltip("Toggle Goal Explosion Randomizer");
-	}
 
 	ImGui::Text("\nSelect Goal Explosions:");
 	if (ImGui::ListBoxHeader("Shift to clear all paints\nCtrl to select all paints"))
