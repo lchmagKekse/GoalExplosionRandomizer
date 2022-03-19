@@ -77,7 +77,15 @@ void GoalExplosionRandomizer::RenderSettings() {
 		ImGui::SetTooltip("Select all owned Goal Explosions");
 	}
 
-	ImGui::Text("Made by LchmagKekse");
+	ImGui::SameLine();
+	if (ImGui::Button("Select Favorites")) {
+		gameWrapper->Execute([this](GameWrapper* gw) { cvarManager->executeCommand("SelectFavourite"); });
+	}
+	if (ImGui::IsItemHovered()) {
+		ImGui::SetTooltip("Select all Goal Explosions marked as Favorite");
+	}
+
+	ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.4f, 1.0f), "Made by LchmagKekse");
 }
 
 bool GoalExplosionRandomizer::getSelected(int var) {

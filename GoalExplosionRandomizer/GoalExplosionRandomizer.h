@@ -22,7 +22,9 @@ class GoalExplosionRandomizer: public BakkesMod::Plugin::BakkesModPlugin, public
 	void clearAll();
 	void selectAll();
 	void selectOwned();
-	const char* getSelectionSavePath();
+	void selectFavorites();
+	const char* getSelectionSaveDir();
+	const char* getSelectionSaveFile();
 	void selectForXY(std::string var, int svar);
 	void fillVector();
 	void quicksortVector(int start, int end);

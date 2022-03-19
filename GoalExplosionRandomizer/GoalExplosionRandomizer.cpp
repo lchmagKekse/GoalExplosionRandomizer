@@ -3,6 +3,9 @@
 #include "BMLoadout.h"
 #include "bakkesmod\wrappers\cvarwrapper.h"
 #include "bakkesmod\wrappers\GameWrapper.h"
+#include <direct.h>
+#include <stdlib.h>
+#include <stdio.h>
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -32,6 +35,10 @@ void GoalExplosionRandomizer::onLoad() {
 		selectOwned();
 		}, "", PERMISSION_ALL);
 
+	cvarManager->registerNotifier("SelectFavourite", [this](std::vector<std::string> args) {
+		selectFavorites();
+		}, "", PERMISSION_ALL);
+
 	cvarManager->registerCvar("GoalExplosionRandomizer_enable", "0", "Enable Plugin", true, true, 0, true, 1)
 		.addOnValueChanged([this](std::string oldValue, CVarWrapper cvar) {
 			Plugin_enabled = cvar.getBoolValue();
@@ -58,6 +65,7 @@ void GoalExplosionRandomizer::onLoad() {
 			}
 		});
 
+	_mkdir(getSelectionSaveDir());
 	fillVector();
 	quicksortVector(0, items.size() - 1);
 	writeUnpaintables();
@@ -158,6 +166,53 @@ void GoalExplosionRandomizer::selectOwned() {
 	saveData();
 }
 
+void GoalExplosionRandomizer::selectFavorites() {
+
+/*	auto iw = gw->GetItemsWrapper();
+	if (iw.IsNull()) { return; }
+	auto arr = iw.GetOwnedProducts();
+	if (arr.IsNull()) { return; }
+
+	bool isPainted = false;
+
+	for (int var = 1; var < arr.Count(); var++) {
+
+		auto product = arr.Get(var);
+		if (!product.IsNull()) {
+
+			auto productSlot = product.GetProduct();
+
+			if (!productSlot.IsNull()) {
+
+				if (productSlot.GetSlot().GetOnlineLabel().ToString() == "Goal Explosion") {
+
+					auto attributes = product.GetAttributes();
+
+					if (!attributes.IsNull()) {
+
+						for (int i = 0; i < attributes.Count(); i++) {
+
+							auto attr = attributes.Get(i);
+
+							if (attr.GetAttributeType() == "ProductAttribute_Painted_TA" && product.IsFavorited()) {
+								selectForXY(product.GetLongLabel().ToString(), ProductAttribute_PaintedWrapper(attr.memory_address).GetPaintID());
+								isPainted = true;
+							}
+						}
+					}
+
+					if (isPainted == false && product.IsFavorited())
+						selectForXY(product.GetLongLabel().ToString(), 0);
+
+					isPainted = false;
+
+				}
+			}
+		}
+	}*/
+
+}
+
 bool GoalExplosionRandomizer::checkempty() {
 
 	for (int var = 0; var < selection.size(); var++) 
@@ -209,7 +264,7 @@ void GoalExplosionRandomizer::setGoalExplosion(uint16_t goalID, uint8_t paintID)
 void GoalExplosionRandomizer::saveData() {
 
 	std::fstream file;
-	file.open(getSelectionSavePath(), std::ios::out);
+	file.open(getSelectionSaveFile(), std::ios::out);
 	if (file.is_open())
 		for (int var = 0; var < selection.size(); var++) {
 				file << (int)selection[var];
@@ -223,7 +278,7 @@ void GoalExplosionRandomizer::loadData() {
 	int var = 0;
 
 	std::fstream file;
-	file.open(getSelectionSavePath(), std::ios::in);
+	file.open(getSelectionSaveFile(), std::ios::in);
 
 	if (file.is_open()) {
 
@@ -241,7 +296,14 @@ void GoalExplosionRandomizer::loadData() {
 	file.close();
 }
 
-const char* GoalExplosionRandomizer::getSelectionSavePath() {
+const char* GoalExplosionRandomizer::getSelectionSaveDir() {
+
+	auto BMpath = gameWrapper->GetDataFolder() / "GoalExplosionRandomizer";
+	std::string BMpath_str = BMpath.string();
+	return BMpath_str.c_str();
+}
+
+const char* GoalExplosionRandomizer::getSelectionSaveFile() {
 
 	auto BMpath = gameWrapper->GetDataFolder() / "GoalExplosionRandomizer" / "GoalExplosionRandomizer.txt";
 	std::string BMpath_str = BMpath.string();
