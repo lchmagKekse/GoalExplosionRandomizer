@@ -30,7 +30,7 @@ It's client side, so other players will see the goal explosion you have selected
 The item mod from bakkesmod will be turned on. If you have an active preset, only the goal explosion will be changed.
 If you don't want items from the item mod, use an empty preset.
 
-If you want to back up your selection or share it with friends, go into `[bakkesmod folder]\data\GoalExplosionRandomizer` and copy all files to a safe place or share them with friends.
+If you want to back up your selection or share it with friends, go into `[bakkesmod_folder]\data\GoalExplosionRandomizer` and copy all files to a safe place or share them with friends.
 
 ---
 
