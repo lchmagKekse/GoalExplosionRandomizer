@@ -89,7 +89,7 @@ void GoalExplosionRandomizer::RenderSettings() {
 		ImGui::SetTooltip("Select all Goal Explosions marked as Favorite");
 	}
 
-	ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.4f, 1.0f), "Made by LchmagKekse");
+	ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.4f, 0.5f), "Made by LchmagKekse");
 }
 
 bool GoalExplosionRandomizer::getSelected(uint64_t index) {

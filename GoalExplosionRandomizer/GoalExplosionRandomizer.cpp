@@ -15,10 +15,6 @@ BAKKESMOD_PLUGIN(GoalExplosionRandomizer, "GoalExplosionRandomizer", plugin_vers
 std::shared_ptr<CVarManagerWrapper> _globalCvarManager;
 std::shared_ptr<GameWrapper> gw;
 
-uint16_t goal;
-uint8_t paint;
-std::string itemmod_code;
-
 void GoalExplosionRandomizer::onLoad() {
 
 	_globalCvarManager = cvarManager;
