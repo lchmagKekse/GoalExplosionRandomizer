@@ -1,11 +1,11 @@
 # Goal Explosion Randomizer
 ![ ](https://raw.githubusercontent.com/lchmagKekse/GoalExplosionRandomizer/main/images/thumbnail.jpg)
 
-### What does this plugin do?
+## What does this plugin do?
 This plugin randomizes goal explosions.  
 You can select the explosions you like, and they get switched each time you score a goal.
 
-### How to use
+## How to use
  - Install this plugin on [bakkesplugins.com](https://bakkesplugins.com/plugins/view/314)
  - In Rocket League press F2 
  - Go to Plugins -> Goal Explosion Randomizer
