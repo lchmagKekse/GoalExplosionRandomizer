@@ -35,7 +35,7 @@ void GoalExplosionRandomizer::onLoad() {
 		selectOwned();
 		}, "", PERMISSION_ALL);
 
-	cvarManager->registerNotifier("SelectFavourite", [this](std::vector<std::string> args) {
+	cvarManager->registerNotifier("SelectFavorites", [this](std::vector<std::string> args) {
 		selectFavorites();
 		}, "", PERMISSION_ALL);
 
@@ -48,7 +48,7 @@ void GoalExplosionRandomizer::onLoad() {
 		[this](std::string eventName) {
 			if (Plugin_enabled && checkempty()) {
 				if (gameWrapper->IsInOnlineGame()) {
-					setRandomGoalExplosionFromSelected();
+					getGoalExplosion();
 					setGoalExplosion(goal, 0);
 				}
 			}			
@@ -65,29 +65,36 @@ void GoalExplosionRandomizer::onLoad() {
 			}
 		});
 
-	_mkdir(getSelectionSaveDir());
-	fillVector();
-	quicksortVector(0, items.size() - 1);
-	writeUnpaintables();
-	loadData();
+	init();
 }
 
 void GoalExplosionRandomizer::onUnload() {}
 
-void GoalExplosionRandomizer::setAllForN(int var) {
+void GoalExplosionRandomizer::init() {
 
-	for (int x = 0; x < IM_ARRAYSIZE(paints); x++) {
-		if (selection[(var * IM_ARRAYSIZE(paints)) + x] != 2)
-			selection[(var * IM_ARRAYSIZE(paints)) + x] = 1;
+	if (_mkdir(getSaveDir()) == 0)
+		cvarManager->log("SavePath created");
+
+	fillItemArray();
+	sortItemsAlphabetically(0, items.size() - 1);
+	writeUnpaintables();
+	loadData();
+}
+
+void GoalExplosionRandomizer::setAllForN(uint64_t index) {
+
+	for (uint64_t var = 0; var < IM_ARRAYSIZE(paints); var++) {
+		if (selection[(index * IM_ARRAYSIZE(paints)) + var] != 2)
+			selection[(index * IM_ARRAYSIZE(paints)) + var] = 1;
 	}
 	saveData();
 }
 
-void GoalExplosionRandomizer::clearAllForN(int var) {
+void GoalExplosionRandomizer::clearAllForN(uint64_t index) {
 
-	for (int x = 0; x < IM_ARRAYSIZE(paints); x++) {
-		if (selection[(var * IM_ARRAYSIZE(paints)) + x] != 2)
-			selection[(var * IM_ARRAYSIZE(paints)) + x] = 0;
+	for (uint64_t var = 0; var < IM_ARRAYSIZE(paints); var++) {
+		if (selection[(index * IM_ARRAYSIZE(paints)) + var] != 2)
+			selection[(index * IM_ARRAYSIZE(paints)) + var] = 0;
 	}
 	saveData();
 }
@@ -110,12 +117,12 @@ void GoalExplosionRandomizer::clearAll() {
 	saveData();
 }
 
-void GoalExplosionRandomizer::selectForXY(std::string var, int svar) {
+void GoalExplosionRandomizer::selectForXY(std::string Label, uint64_t PaintID) {
 
-	for (int i = 0; i < items.size() ; i++) {
+	for (uint64_t var = 0; var < items.size() ; var++) {
 
-		if (items[i] == var)
-			selection[(i * IM_ARRAYSIZE(paints)) + svar] = 1;
+		if (items[var] == Label)
+			selection[(var * IM_ARRAYSIZE(paints)) + PaintID] = 1;
 	}
 
 }
@@ -144,9 +151,9 @@ void GoalExplosionRandomizer::selectOwned() {
 
 					if (!attributes.IsNull()) {
 
-						for (int i = 0; i < attributes.Count(); i++) {
+						for (int svar = 0; svar < attributes.Count(); svar++) {
 
-							auto attr = attributes.Get(i);
+							auto attr = attributes.Get(svar);
 
 							if (attr.GetAttributeType() == "ProductAttribute_Painted_TA") {
 								selectForXY(product.GetLongLabel().ToString(), ProductAttribute_PaintedWrapper(attr.memory_address).GetPaintID());
@@ -175,7 +182,7 @@ void GoalExplosionRandomizer::selectFavorites() {
 
 	bool isPainted = false;
 
-	for (int var = 1; var < arr.Count(); var++) {
+	for (int var = 1; i < arr.Count(); var++) {
 
 		auto product = arr.Get(var);
 		if (!product.IsNull()) {
@@ -190,9 +197,9 @@ void GoalExplosionRandomizer::selectFavorites() {
 
 					if (!attributes.IsNull()) {
 
-						for (int i = 0; i < attributes.Count(); i++) {
+						for (int x = 0; svar < attributes.Count(); svar++) {
 
-							auto attr = attributes.Get(i);
+							auto attr = attributes.Get(svar);
 
 							if (attr.GetAttributeType() == "ProductAttribute_Painted_TA" && product.IsFavorited()) {
 								selectForXY(product.GetLongLabel().ToString(), ProductAttribute_PaintedWrapper(attr.memory_address).GetPaintID());
@@ -215,24 +222,22 @@ void GoalExplosionRandomizer::selectFavorites() {
 
 bool GoalExplosionRandomizer::checkempty() {
 
-	for (int var = 0; var < selection.size(); var++) 
+	for (int var = 0; var < selection.size(); var++)
 			if (selection[var] == 1)
 				return true;
 	return false;
 }
 
-void GoalExplosionRandomizer::setRandomGoalExplosionFromSelected() {
+void GoalExplosionRandomizer::getGoalExplosion() {
 
-	int var;
+	while(true) {
 
-	for (bool hasIDs = false; !hasIDs;) {
-
-		var = rndm(0, selection.size());
+		int var = rndm(0, selection.size());
 
 		if (selection[var] == 1) {
-			goal = GoalIDs[(int)(var/14)];
+			goal = GoalIDs[(int)(var / 14)];
 			paint = var % 14;
-			hasIDs = true;
+			return;
 		}
 	}
 }
@@ -244,7 +249,7 @@ int GoalExplosionRandomizer::rndm(int min, int max) {
 std::string GoalExplosionRandomizer::getItemCode() {
 
 	CVarWrapper code_cvar = cvarManager->getCvar("cl_itemmod_code");
-	if (!code_cvar) {
+	if (!code_cvar || code_cvar.getStringValue() == "") {
 		return "AwIgA1yAAAA=";
 	}
 	return code_cvar.getStringValue();
@@ -264,7 +269,7 @@ void GoalExplosionRandomizer::setGoalExplosion(uint16_t goalID, uint8_t paintID)
 void GoalExplosionRandomizer::saveData() {
 
 	std::fstream file;
-	file.open(getSelectionSaveFile(), std::ios::out);
+	file.open(getSaveFile(), std::ios::out);
 	if (file.is_open())
 		for (int var = 0; var < selection.size(); var++) {
 				file << (int)selection[var];
@@ -278,44 +283,44 @@ void GoalExplosionRandomizer::loadData() {
 	int var = 0;
 
 	std::fstream file;
-	file.open(getSelectionSaveFile(), std::ios::in);
+	file.open(getSaveFile(), std::ios::in);
 
-	if (file.is_open()) {
+	if (!file.is_open()) return;
 
-		std::string line;
-		while (std::getline(file, line)) {
+	std::string line;
+	while(std::getline(file, line)) {
+		
+		if (line._Equal("0") && selection[var] != 2)
+			selection[var] = 0;
+		else if (line._Equal("1") && selection[var] != 2)
+			selection[var] = 1;
 
-			if (line._Equal("0") && selection[var] != 2)
-				selection[var] = 0;
-			else if (line._Equal("1") && selection[var] != 2)
-				selection[var] = 1;
-
-			var++;
-		}
+		var++;
 	}
+
 	file.close();
 }
 
-const char* GoalExplosionRandomizer::getSelectionSaveDir() {
+const char* GoalExplosionRandomizer::getSaveDir() {
 
 	auto BMpath = gameWrapper->GetDataFolder() / "GoalExplosionRandomizer";
 	std::string BMpath_str = BMpath.string();
 	return BMpath_str.c_str();
 }
 
-const char* GoalExplosionRandomizer::getSelectionSaveFile() {
+const char* GoalExplosionRandomizer::getSaveFile() {
 
 	auto BMpath = gameWrapper->GetDataFolder() / "GoalExplosionRandomizer" / "GoalExplosionRandomizer.txt";
 	std::string BMpath_str = BMpath.string();
 	return BMpath_str.c_str();
 }
 
-void GoalExplosionRandomizer::fillVector() {
+void GoalExplosionRandomizer::fillItemArray() {
 
 	auto iw = gw->GetItemsWrapper();
-	if (iw.IsNull()) { return; }
+	if (iw.IsNull()) return;
 	auto arr = iw.GetAllProducts();
-	if (arr.IsNull()) { return; }
+	if (arr.IsNull()) return;
 
 	items.clear();
 	GoalIDs.clear();
@@ -327,22 +332,22 @@ void GoalExplosionRandomizer::fillVector() {
 
 			if (product.GetSlot().GetOnlineLabel().ToString() == "Goal Explosion") {
 
-				std::string svar = product.GetLabel().ToString();
-				items.push_back(svar);
+				std::string Label = product.GetLabel().ToString();
+				items.push_back(Label);
 				GoalIDs.push_back(var);
 			}
 		}
 	}
 }
 
-void GoalExplosionRandomizer::quicksortVector(int start, int end) {
+void GoalExplosionRandomizer::sortItemsAlphabetically(int start, int end) {
 
 	if (start >= end)
 		return;
 
 	int p = partition(start, end);
-	quicksortVector(start, p - 1);
-	quicksortVector(p + 1, end);
+	sortItemsAlphabetically(start, p - 1);
+	sortItemsAlphabetically(p + 1, end);
 
 }
 
@@ -408,14 +413,14 @@ void GoalExplosionRandomizer::writeUnpaintables() {
 	}
 }
 
-bool GoalExplosionRandomizer::isPaintable(int var) {
+bool GoalExplosionRandomizer::isPaintable(int index) {
 
 	auto iw = gw->GetItemsWrapper();
 	if (iw.IsNull()) { return false; }
 	auto arr = iw.GetAllProducts();
 	if (arr.IsNull()) { return false; }
 
-	ProductWrapper product = iw.GetProduct(GoalIDs[var]);
+	ProductWrapper product = iw.GetProduct(GoalIDs[index]);
 	if (!product.IsNull())
 		if (product.IsPaintable())
 			return true;

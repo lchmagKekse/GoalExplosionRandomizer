@@ -25,7 +25,7 @@ void GoalExplosionRandomizer::RenderSettings() {
 	}
 
 	ImGui::Text("\nSelect Goal Explosions:");
-	if (ImGui::ListBoxHeader("Shift to clear all paints\nCtrl to select all paints"))
+	if (ImGui::ListBoxHeader(""))
 	{
 		for (int var = 0; var < items.size(); var++)
 		{
@@ -39,15 +39,19 @@ void GoalExplosionRandomizer::RenderSettings() {
 		}
 		ImGui::ListBoxFooter();
 	}
+	ImGui::SameLine();
+	ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.4f, 1.0f), "Ctrl\nShift");
+	ImGui::SameLine(0,0);
+	ImGui::Text(" to select all paints\n to clear all paints");
 
-	std::string a = "\nSelect Colors for ";
-	std::string b = items[lastSelected];
-	std::string c = a + b;
+	ImGui::NewLine();
+	ImGui::Text("Select Colors for ");
+	ImGui::SameLine(0,0);
+	ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.4f, 1.0f), items[lastSelected].c_str());
 
-	ImGui::Text(c.c_str());
 	if (ImGui::ListBoxHeader(" "))
 	{
-		for (int var = 0; selection[(lastSelected * IM_ARRAYSIZE(paints)) + var] != 2 && var < IM_ARRAYSIZE(paints); var++)
+		for (uint64_t var = 0; selection[(lastSelected * IM_ARRAYSIZE(paints)) + var] != 2 && var < IM_ARRAYSIZE(paints); var++)
 		{
 			if (ImGui::Selectable(paints[var], selection[(lastSelected * IM_ARRAYSIZE(paints)) + var]))
 			{
@@ -59,7 +63,7 @@ void GoalExplosionRandomizer::RenderSettings() {
 		ImGui::ListBoxFooter();
 	}
 
-	ImGui::Text("");
+	ImGui::NewLine();
 	if (ImGui::Button("Clear all")) {
 		gameWrapper->Execute([this](GameWrapper* gw) { cvarManager->executeCommand("ClearAll"); });
 	}
@@ -78,8 +82,8 @@ void GoalExplosionRandomizer::RenderSettings() {
 	}
 
 	ImGui::SameLine();
-	if (ImGui::Button("Select Favorites")) {
-		gameWrapper->Execute([this](GameWrapper* gw) { cvarManager->executeCommand("SelectFavourite"); });
+	if (ImGui::Button("Select favorites")) {
+		gameWrapper->Execute([this](GameWrapper* gw) { cvarManager->executeCommand("SelectFavorites"); });
 	}
 	if (ImGui::IsItemHovered()) {
 		ImGui::SetTooltip("Select all Goal Explosions marked as Favorite");
@@ -88,13 +92,12 @@ void GoalExplosionRandomizer::RenderSettings() {
 	ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.4f, 1.0f), "Made by LchmagKekse");
 }
 
-bool GoalExplosionRandomizer::getSelected(int var) {
+bool GoalExplosionRandomizer::getSelected(uint64_t index) {
 
-	bool isenabled = false;
-
-	for (int svar = 0; svar < IM_ARRAYSIZE(paints) && !isenabled; svar++) {
-		if (selection[(var * IM_ARRAYSIZE(paints)) + svar] == 1)
-			isenabled = true;
+	for (uint64_t var = 0; var < IM_ARRAYSIZE(paints); var++) {
+		if (selection[(index * IM_ARRAYSIZE(paints)) + var] == 1)
+			return true;
 	}
-	return isenabled;
+
+	return false;
 }

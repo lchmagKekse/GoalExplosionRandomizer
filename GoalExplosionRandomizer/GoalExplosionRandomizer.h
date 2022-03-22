@@ -11,11 +11,12 @@ class GoalExplosionRandomizer: public BakkesMod::Plugin::BakkesModPlugin, public
 {
 	virtual void onLoad();
 	virtual void onUnload();
+	void init();
 
 	int rndm(int min, int max);
 	void setGoalExplosion(uint16_t goalID, uint8_t paintID);
 	std::string getItemCode();
-	void setRandomGoalExplosionFromSelected();
+	void getGoalExplosion();
 	bool checkempty();
 	void saveData();
 	void loadData();
@@ -23,25 +24,25 @@ class GoalExplosionRandomizer: public BakkesMod::Plugin::BakkesModPlugin, public
 	void selectAll();
 	void selectOwned();
 	void selectFavorites();
-	const char* getSelectionSaveDir();
-	const char* getSelectionSaveFile();
-	void selectForXY(std::string var, int svar);
-	void fillVector();
-	void quicksortVector(int start, int end);
+	const char* getSaveDir();
+	const char* getSaveFile();
+	void selectForXY(std::string Label, uint64_t PaintID);
+	void fillItemArray();
+	void sortItemsAlphabetically(int start, int end);
 	int partition(int start, int end);
 	void Swap(int var, int svar);
 	void writeUnpaintables();
-	bool isPaintable(int);
+	bool isPaintable(int index);
 	
-	bool getSelected(int var);
+	bool getSelected(uint64_t index);
 	void RenderSettings() override;
 	std::string GetPluginName() override;
 	void SetImGuiContext(uintptr_t ctx) override;
-	void setAllForN(int var);
-	void clearAllForN(int var);
+	void setAllForN(uint64_t index);
+	void clearAllForN(uint64_t index);
 
 	bool Plugin_enabled = false;
-	int lastSelected = 0;
+	uint64_t lastSelected = 0;
 	std::vector<std::string> items;
 	std::vector<std::uint16_t> GoalIDs;
 	std::vector<std::uint8_t> selection;
