@@ -1,6 +1,5 @@
 #include "pch.h"
 #include "GoalExplosionRandomizer.h"
-#include "imgui/imgui.h"
 
 std::string GoalExplosionRandomizer::GetPluginName() {
 	return "Goal Explosion Randomizer";
@@ -31,16 +30,16 @@ void GoalExplosionRandomizer::RenderSettings() {
 		{
 			if (ImGui::Selectable(items[var].c_str(), getSelected(var))) {
 				lastSelected = var;
-				if (ImGui::GetIO().KeyCtrl)
-					setAllForN(lastSelected);
 				if (ImGui::GetIO().KeyShift)
+					setAllForN(lastSelected);
+				if (ImGui::GetIO().KeyCtrl)
 					clearAllForN(lastSelected);
 			}
 		}
 		ImGui::ListBoxFooter();
 	}
 	ImGui::SameLine();
-	ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.4f, 1.0f), "Ctrl\nShift");
+	ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.4f, 1.0f), "Shift\nCtrl");
 	ImGui::SameLine(0,0);
 	ImGui::Text(" to select all paints\n to clear all paints");
 
@@ -92,12 +91,3 @@ void GoalExplosionRandomizer::RenderSettings() {
 	ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.4f, 0.5f), "Made by LchmagKekse");
 }
 
-bool GoalExplosionRandomizer::getSelected(uint64_t index) {
-
-	for (uint64_t var = 0; var < IM_ARRAYSIZE(paints); var++) {
-		if (selection[(index * IM_ARRAYSIZE(paints)) + var] == 1)
-			return true;
-	}
-
-	return false;
-}

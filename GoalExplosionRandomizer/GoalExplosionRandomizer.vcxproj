@@ -22,7 +22,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -91,7 +91,7 @@
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="BMLoadout.cpp" />
+    <ClCompile Include="BMLoadout\BMLoadout.cpp" />
     <ClCompile Include="fmt\src\format.cc" />
     <ClCompile Include="fmt\src\os.cc" />
     <ClCompile Include="imgui\imgui.cpp" />
@@ -113,9 +113,9 @@
     <ClCompile Include="GoalExplosionRandomizerGUI.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="base64.h" />
-    <ClInclude Include="BMLoadout.h" />
-    <ClInclude Include="helper_classes.h" />
+    <ClInclude Include="BMLoadout\base64.h" />
+    <ClInclude Include="BMLoadout\BMLoadout.h" />
+    <ClInclude Include="BMLoadout\helper_classes.h" />
     <ClInclude Include="imgui\imconfig.h" />
     <ClInclude Include="imgui\imgui.h" />
     <ClInclude Include="imgui\imguivariouscontrols.h" />

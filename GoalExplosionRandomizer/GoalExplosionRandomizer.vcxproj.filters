@@ -22,6 +22,9 @@
     <Filter Include="imgui\implementation">
       <UniqueIdentifier>{d46c4711-0bdc-484c-bb4c-5526d80f7f5e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="BMLoadout">
+      <UniqueIdentifier>{a5bc3fbf-0444-4e6f-bb7f-9c517226a3f9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GoalExplosionRandomizer.cpp">
@@ -72,8 +75,8 @@
     <ClCompile Include="fmt\src\os.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="BMLoadout.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="BMLoadout\BMLoadout.cpp">
+      <Filter>BMLoadout</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -125,14 +128,14 @@
     <ClInclude Include="version.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="base64.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="BMLoadout\base64.h">
+      <Filter>BMLoadout</Filter>
     </ClInclude>
-    <ClInclude Include="BMLoadout.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="BMLoadout\BMLoadout.h">
+      <Filter>BMLoadout</Filter>
     </ClInclude>
-    <ClInclude Include="helper_classes.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="BMLoadout\helper_classes.h">
+      <Filter>BMLoadout</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

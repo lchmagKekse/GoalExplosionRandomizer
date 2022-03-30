@@ -1,14 +1,9 @@
 #include "pch.h"
 #include "GoalExplosionRandomizer.h"
-#include "BMLoadout.h"
-#include "bakkesmod\wrappers\cvarwrapper.h"
-#include "bakkesmod\wrappers\GameWrapper.h"
+#include "BMLoadout/BMLoadout.h"
 #include <direct.h>
-#include <stdlib.h>
-#include <stdio.h>
 #include <iostream>
 #include <fstream>
-#include <string>
 
 BAKKESMOD_PLUGIN(GoalExplosionRandomizer, "GoalExplosionRandomizer", plugin_version, PLUGINTYPE_FREEPLAY)
 
@@ -171,14 +166,14 @@ void GoalExplosionRandomizer::selectOwned() {
 
 void GoalExplosionRandomizer::selectFavorites() {
 
-/*	auto iw = gw->GetItemsWrapper();
+	auto iw = gw->GetItemsWrapper();
 	if (iw.IsNull()) { return; }
 	auto arr = iw.GetOwnedProducts();
 	if (arr.IsNull()) { return; }
 
 	bool isPainted = false;
 
-	for (int var = 1; i < arr.Count(); var++) {
+	for (int var = 1; var < arr.Count(); var++) {
 
 		auto product = arr.Get(var);
 		if (!product.IsNull()) {
@@ -193,7 +188,7 @@ void GoalExplosionRandomizer::selectFavorites() {
 
 					if (!attributes.IsNull()) {
 
-						for (int x = 0; svar < attributes.Count(); svar++) {
+						for (int svar = 0; svar < attributes.Count(); svar++) {
 
 							auto attr = attributes.Get(svar);
 
@@ -208,12 +203,11 @@ void GoalExplosionRandomizer::selectFavorites() {
 						selectForXY(product.GetLongLabel().ToString(), 0);
 
 					isPainted = false;
-
 				}
 			}
 		}
-	}*/
-
+	}
+	saveData();
 }
 
 bool GoalExplosionRandomizer::checkempty() {
@@ -420,6 +414,16 @@ bool GoalExplosionRandomizer::isPaintable(int index) {
 	if (!product.IsNull())
 		if (product.IsPaintable())
 			return true;
+
+	return false;
+}
+
+bool GoalExplosionRandomizer::getSelected(uint64_t index) {
+
+	for (uint64_t var = 0; var < IM_ARRAYSIZE(paints); var++) {
+		if (selection[(index * IM_ARRAYSIZE(paints)) + var] == 1)
+			return true;
+	}
 
 	return false;
 }
