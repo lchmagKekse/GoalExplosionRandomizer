@@ -39,8 +39,8 @@ class GoalExplosionRandomizer: public BakkesMod::Plugin::BakkesModPlugin, public
 
 	void saveData();
 	void loadData();
-	const char* getSaveDir();
-	const char* getSaveFile();
+	std::string getSaveDir();
+	std::string getSaveFile();
 
 	void fillItemArray();
 	void sortItemsAlphabetically(int start, int end);

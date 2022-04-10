@@ -63,7 +63,7 @@ void GoalExplosionRandomizer::onUnload() {}
 
 void GoalExplosionRandomizer::init() {
 
-	if (_mkdir(getSaveDir()) == 0)
+	if (_mkdir(getSaveDir().c_str()) == 0)
 		cvarManager->log("SavePath created");
 
 	fillItemArray();
@@ -291,18 +291,16 @@ void GoalExplosionRandomizer::loadData() {
 	file.close();
 }
 
-const char* GoalExplosionRandomizer::getSaveDir() {
+std::string GoalExplosionRandomizer::getSaveDir() {
 
 	auto BMpath = gameWrapper->GetDataFolder() / "GoalExplosionRandomizer";
-	std::string BMpath_str = BMpath.string();
-	return BMpath_str.c_str();
+	return BMpath.string();
 }
 
-const char* GoalExplosionRandomizer::getSaveFile() {
+std::string GoalExplosionRandomizer::getSaveFile() {
 
 	auto BMpath = gameWrapper->GetDataFolder() / "GoalExplosionRandomizer" / "GoalExplosionRandomizer.txt";
-	std::string BMpath_str = BMpath.string();
-	return BMpath_str.c_str();
+	return BMpath.string();
 }
 
 void GoalExplosionRandomizer::fillItemArray() {
