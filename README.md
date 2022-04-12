@@ -21,7 +21,7 @@ ___
  - `Clear all` - clears every explosion you have selected
  - `Select all` - selects every explosion in every available color
  - `Select owned` - selects every explosion that you have in your inventory
- - `Select favorites` - selects every explosion that you have marked as favorite (this will be available later)
+ - `Select favorites` - selects every explosion that you have marked as favorite
 
 ___
 
