@@ -30,31 +30,33 @@ void GoalExplosionRandomizer::onLoad() {
 		selectFavorites();
 		}, "", PERMISSION_ALL);
 
-	cvarManager->registerCvar("GoalExplosionRandomizer_enable", "0", "Enable Plugin", true, true, 0, true, 1)
+	cvarManager->registerCvar("GoalExplosionRandomizer_enable", "0", "Enable Plugin", false, true, 0, true, 1)
 		.addOnValueChanged([this](std::string oldValue, CVarWrapper cvar) {
-			Plugin_enabled = cvar.getBoolValue();
-		});
+		Plugin_enabled = cvar.getBoolValue();
+	});
 
-	gameWrapper->HookEventPost("Function TAGame.PRI_TA.ClientScoredGoal",
-		[this](std::string eventName) {
-			if (Plugin_enabled && checkempty()) {
-				if (gameWrapper->IsInOnlineGame()) {
-					getGoalExplosion();
-					setGoalExplosion(goal, 0);
-				}
-			}			
-		});
+	cvarManager->registerCvar("NoRepetition", "0", "Toggle Repetition", false, true, 0, true, 1)
+		.addOnValueChanged([this](std::string oldValue, CVarWrapper cvar) {
+		NoRepetition = cvar.getBoolValue();
+	});
 
 	gameWrapper->HookEventPost("Function ReplayDirector_TA.Playing.EndState",
 		[this](std::string eventName) {
-			if (Plugin_enabled && checkempty()) {
-				if (gameWrapper->IsInOnlineGame()) {
+			if (Plugin_enabled && checkEmpty())
+				if (!(gw->IsInCustomTraining() || gw->IsInFreeplay() || gw->IsInReplay())) {
 					if (paint == 0)
 						paint = 19;
 					setGoalExplosion(goal, paint);
 				}
-			}
 		});
+
+	gameWrapper->HookEventWithCallerPost<ServerWrapper>("Function TAGame.GFxHUD_TA.HandleStatEvent",
+		[this](ServerWrapper caller, void* params, std::string eventname) {
+
+		if (Plugin_enabled && checkEmpty())
+			if (!(gw->IsInCustomTraining() || gw->IsInFreeplay() || gw->IsInReplay()))
+				getGoalExplosion(params);
+	});
 
 	init();
 }
@@ -115,7 +117,6 @@ void GoalExplosionRandomizer::selectForXY(std::string Label, uint64_t PaintID) {
 		if (items[var] == Label)
 			selection[(var * IM_ARRAYSIZE(paints)) + PaintID] = 1;
 	}
-
 }
 
 void GoalExplosionRandomizer::selectOwned() {
@@ -210,7 +211,7 @@ void GoalExplosionRandomizer::selectFavorites() {
 	saveData();
 }
 
-bool GoalExplosionRandomizer::checkempty() {
+bool GoalExplosionRandomizer::checkEmpty() {
 
 	for (int var = 0; var < selection.size(); var++)
 			if (selection[var] == 1)
@@ -218,16 +219,59 @@ bool GoalExplosionRandomizer::checkempty() {
 	return false;
 }
 
-void GoalExplosionRandomizer::getGoalExplosion() {
+bool GoalExplosionRandomizer::isRepetitionPossible() {
 
-	while(true) {
+	int counter = 0;
 
-		int var = rndm(0, selection.size());
+	for (int var = 0; var < selection.size(); var++)
+		if (selection[var] == 1)
+			counter++;
 
-		if (selection[var] == 1) {
-			goal = GoalIDs[(int)(var / 14)];
-			paint = var % 14;
-			return;
+	if(counter > 1)
+		return true;
+
+	return false;
+}
+
+void GoalExplosionRandomizer::getGoalExplosion(void* params) {
+
+	struct StatEventParams {
+		uintptr_t PRI;
+		uintptr_t StatEvent;
+	};
+
+	StatEventParams* pStruct = (StatEventParams*)params;
+	StatEventWrapper statEvent = StatEventWrapper(pStruct->StatEvent);
+
+	if (statEvent.IsNull()) return;
+
+	if (statEvent.GetEventName() == "Goal") {
+
+		while (true) {
+
+			int var = rndm(0, selection.size());
+
+			if (selection[var] == 1) {
+
+				if (NoRepetition && isRepetitionPossible()) {
+					if (!(var == lastExplosion)) {
+						goal = GoalIDs[(int)(var / 14)];
+						paint = var % 14;
+						lastExplosion = var;
+
+						setGoalExplosion(goal, 0);
+						return;
+					}
+				}
+				else {
+					goal = GoalIDs[(int)(var / 14)];
+					paint = var % 14;
+					lastExplosion = var;
+
+					setGoalExplosion(goal, 0);
+					return;
+				}
+			}
 		}
 	}
 }
@@ -381,7 +425,6 @@ void GoalExplosionRandomizer::Swap(int var, int svar) {
 	uint16_t temp2 = GoalIDs[svar];
 	GoalIDs[svar] = GoalIDs[var];
 	GoalIDs[var] = temp2;
-
 }
 
 void GoalExplosionRandomizer::writeUnpaintables() {

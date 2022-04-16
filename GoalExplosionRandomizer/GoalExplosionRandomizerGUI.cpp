@@ -12,16 +12,10 @@ void GoalExplosionRandomizer::SetImGuiContext(uintptr_t ctx) {
 void GoalExplosionRandomizer::RenderSettings() {
 
 	CVarWrapper enableCvar = cvarManager->getCvar("GoalExplosionRandomizer_enable");
-
-	if (!enableCvar) {
-		return;
-	}
-
+	if (!enableCvar) return;
 	bool enabled = enableCvar.getBoolValue();
-
-	if (ImGui::Checkbox("Enable plugin", &enabled)) {
+	if (ImGui::Checkbox("Enable plugin", &enabled))
 		enableCvar.setValue(enabled);
-	}
 
 	ImGui::Text("\nSelect Goal Explosions:");
 	if (ImGui::ListBoxHeader(""))
@@ -77,7 +71,7 @@ void GoalExplosionRandomizer::RenderSettings() {
 		gameWrapper->Execute([this](GameWrapper* gw) { cvarManager->executeCommand("SelectOwned"); });
 	}
 	if (ImGui::IsItemHovered()) {
-		ImGui::SetTooltip("Select all owned Goal Explosions");
+		ImGui::SetTooltip("Selects all owned Goal Explosions");
 	}
 
 	ImGui::SameLine();
@@ -85,8 +79,17 @@ void GoalExplosionRandomizer::RenderSettings() {
 		gameWrapper->Execute([this](GameWrapper* gw) { cvarManager->executeCommand("SelectFavorites"); });
 	}
 	if (ImGui::IsItemHovered()) {
-		ImGui::SetTooltip("Select all Goal Explosions marked as Favorite");
+		ImGui::SetTooltip("Selects all Goal Explosions marked as Favorite");
 	}
+
+	ImGui::SameLine();
+	CVarWrapper repetition = cvarManager->getCvar("NoRepetition");
+	if (!repetition) return;
+	bool repetitionEnabled = repetition.getBoolValue();
+	if (ImGui::Checkbox("No Repetition", &repetitionEnabled))
+		repetition.setValue(repetitionEnabled);
+	if (ImGui::IsItemHovered())
+		ImGui::SetTooltip("Disables that the same Goal Explosion gets played twice in a row");
 
 	ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.4f, 0.5f), "Made by LchmagKekse");
 }

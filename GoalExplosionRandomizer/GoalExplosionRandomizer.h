@@ -7,17 +7,23 @@
 constexpr auto plugin_version = stringify(VERSION_MAJOR) "." stringify(VERSION_MINOR) "." stringify(VERSION_PATCH); // "." stringify(VERSION_BUILD);
 
 
-class GoalExplosionRandomizer: public BakkesMod::Plugin::BakkesModPlugin, public BakkesMod::Plugin::PluginSettingsWindow
-{
+class GoalExplosionRandomizer: public BakkesMod::Plugin::BakkesModPlugin, public BakkesMod::Plugin::PluginSettingsWindow {
 
 	bool Plugin_enabled = false;
-
-	virtual void onLoad();
-	virtual void onUnload();
+	bool NoRepetition = false;
 
 	uint16_t goal;
 	uint8_t paint;
-	std::string itemmod_code;
+	uint16_t lastExplosion;
+	uint64_t lastSelected = 0;
+
+	std::vector<std::string> items;
+	std::vector<std::uint16_t> GoalIDs;
+	std::vector<std::uint8_t> selection;
+	const char* paints[14] = { "UNPAINTED","CRIMSON","LIME","BLACK","SKYBLUE","COBALT","BURNTSIENNA","FORESTGREEN","PURPLE","PINK","ORANGE","GREY","TITANIUMWHITE","SAFFRON" };
+
+	virtual void onLoad();
+	virtual void onUnload();
 
 	void init();
 
@@ -29,8 +35,9 @@ class GoalExplosionRandomizer: public BakkesMod::Plugin::BakkesModPlugin, public
 	void selectOwned();
 	void selectFavorites();
 
-	bool checkempty();
-	void getGoalExplosion();
+	bool checkEmpty();
+	bool isRepetitionPossible();
+	void getGoalExplosion(void* params);
 
 	int rndm(int min, int max);
 
@@ -55,11 +62,5 @@ class GoalExplosionRandomizer: public BakkesMod::Plugin::BakkesModPlugin, public
 	void RenderSettings() override;
 	std::string GetPluginName() override;
 	void SetImGuiContext(uintptr_t ctx) override;
-
-	uint64_t lastSelected = 0;
-	std::vector<std::string> items;
-	std::vector<std::uint16_t> GoalIDs;
-	std::vector<std::uint8_t> selection;
-	const char* paints[14] = { "UNPAINTED","CRIMSON","LIME","BLACK","SKYBLUE","COBALT","BURNTSIENNA","FORESTGREEN","PURPLE","PINK","ORANGE","GREY","TITANIUMWHITE","SAFFRON" };
 
 };
