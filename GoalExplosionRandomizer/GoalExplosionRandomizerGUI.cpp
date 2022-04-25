@@ -86,7 +86,7 @@ void GoalExplosionRandomizer::RenderSettings() {
 	CVarWrapper repetition = cvarManager->getCvar("NoRepetition");
 	if (!repetition) return;
 	bool repetitionEnabled = repetition.getBoolValue();
-	if (ImGui::Checkbox("No Repetition", &repetitionEnabled))
+	if (ImGui::Checkbox("No repetition", &repetitionEnabled))
 		repetition.setValue(repetitionEnabled);
 	if (ImGui::IsItemHovered())
 		ImGui::SetTooltip("Disables that the same Goal Explosion gets played twice in a row");
