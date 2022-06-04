@@ -35,4 +35,4 @@ If you don't want to see items from the item mod, just use an empty preset.
 If you want to back up your selection or share it with friends, go into `[bakkesmod_folder]\data\GoalExplosionRandomizer` and copy all files to a safe place or share them with friends.  
 
 ---
-If you find bugs or have suggestions for improvement, contact me on discord: ***lchmagKekse#0420***
+If you find bugs or have suggestions for improvement, contact me on discord: ***lchmagKekse#0475***
